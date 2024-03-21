@@ -3,7 +3,7 @@
   <img alt="github stats" height="150px" src="https://github-readme-stats.vercel.app/api?username=linkalls&theme=onedark&show_icons=ture" />
 </p>
 
-[![trophy](https://github-profile-trophy.vercel.app/?username=linkalls&theme=onedark)](https://github.com/ryo-ma/github-profile-trophy)
+[![trophy](https://github-profile-trophy.vercel.app/?username=linkalls&theme=radical)](https://github.com/ryo-ma/github-profile-trophy)
 
   </a>
   <a href="http://twitter.com/potetotown">
