@@ -5,6 +5,8 @@
 
 [![GitHub Trophy](./profile/trophy.svg)](https://github.com/soulteary/github-profile-trophy)
 
+<!-- Trophy and Stats are updated daily by .github/workflows/update-profile-cards.yml. -->
+
 ![GitHub Profile Summary](https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=linkalls&theme=dracula)
 
 <p align="left">
