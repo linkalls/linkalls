@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="155" viewBox="0 0 840 155" role="img" aria-label="GitHub Trophy: waiting for initial Actions run">
+  <rect x="0.5" y="0.5" width="839" height="154" rx="6" fill="#141321" stroke="#383045"/>
+  <text x="25" y="44" fill="#fe428e" font-size="21" font-family="Arial, sans-serif" font-weight="bold">GitHub Profile Trophy</text>
+  <text x="25" y="85" fill="#a9a1b5" font-size="17" font-family="Arial, sans-serif">Preparing trophies...</text>
+  <text x="25" y="117" fill="#807991" font-size="13" font-family="Arial, sans-serif">This card is generated automatically by GitHub Actions.</text>
+</svg>
