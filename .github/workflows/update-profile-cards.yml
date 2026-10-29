@@ -61,17 +61,75 @@ jobs:
           token: ${{ github.token }}
           fail_on_error: "true"
 
-      # Trophyは公開プロフィールを横断して集計するため、PATが必要な環境もある。
-      # PROFILE_STATS_TOKENがなければGITHUB_TOKENで試す。
-      # PATが必要ならSettings > Secrets and variables > Actionsに追加する。
-      - name: Generate GitHub trophy
+      # Trophyは公開ミラーのSVGを1日1回取得してローカル保存する。
+      # 個人用PATや外部の画像表示サーバーへの閲覧時アクセスは不要。
+      # ミラーの候補はryo-ma/github-profile-trophyのREADMEに掲載されたもの。
+      - name: Generate GitHub trophy without a PAT
         id: trophy
         continue-on-error: true
-        uses: soulteary/github-profile-trophy-action@v1
-        with:
-          options: "username=linkalls&theme=radical"
-          path: profile/trophy.svg
-          token: ${{ secrets.PROFILE_STATS_TOKEN || github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # 不完全なダウンロードを保存しないよう、一時ファイルで検査する。
+          candidate="$(mktemp)"
+          trap 'rm -f "$candidate"' EXIT
+
+          mirrors=(
+            'https://trophy.ryglcloud.net/?username=linkalls&theme=radical'
+            'https://github-profile-trophy-fork-two.vercel.app/?username=linkalls&theme=radical'
+            'https://github-profile-trophy-liard-delta.vercel.app/?username=linkalls&theme=radical'
+            'https://github-profile-trophy-winning.vercel.app/?username=linkalls&theme=radical'
+          )
+
+          for url in "${mirrors[@]}"; do
+            echo "Trying trophy mirror: ${url%%\?*}"
+
+            if ! curl --fail --silent --show-error --location \
+              --connect-timeout 10 --max-time 30 --retry 2 \
+              --output "$candidate" "$url"; then
+              echo "::warning::Trophy mirror request failed."
+              continue
+            fi
+
+            # HTMLエラーページや壊れたSVGをコミットしない。
+            if python3 - "$candidate" <<'PY'
+          from pathlib import Path
+          import sys
+          import xml.etree.ElementTree as ET
+
+          path = Path(sys.argv[1])
+          try:
+              svg = ET.parse(path).getroot()
+          except (ET.ParseError, OSError):
+              sys.exit(1)
+
+          if svg.tag not in {"{http://www.w3.org/2000/svg}svg", "svg"}:
+              sys.exit(1)
+          if path.stat().st_size < 1000:
+              sys.exit(1)
+
+          # SVGの中身がエラー画面である場合も拒否する。
+          svg_text = " ".join(svg.itertext()).lower()
+          if any(message in svg_text for message in (
+              "something went wrong",
+              "resource not accessible",
+              "rate limit exceeded",
+              "internal server error",
+          )):
+              sys.exit(1)
+          PY
+            then
+              cp "$candidate" profile/trophy.svg
+              echo "Trophy SVG generated successfully."
+              exit 0
+            fi
+
+            echo "::warning::Trophy mirror returned invalid SVG."
+          done
+
+          echo "::error::All trophy mirrors failed. Keeping the previous SVG."
+          exit 1
 
       # どれかの生成に失敗したら、そのカードだけ前回の正常なSVGを残す。
       # 初回はリポジトリ内に表示可能なプレースホルダーがある。
