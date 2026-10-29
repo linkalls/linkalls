@@ -158,7 +158,12 @@ jobs:
           check_card "profile/top-langs.svg" "$LANGUAGES_OUTCOME"
           check_card "profile/trophy.svg" "$TROPHY_OUTCOME"
 
-      # 成功したカードだけをコミット。変更がなければ何もしない。
+      # GitHubの画像キャッシュを避けるため、SVGの内容ハッシュをREADMEのURLに付与する。
+      # 画像の内容が変わらない日はURLも変更されない。
+      - name: Refresh image cache versions in README
+        run: python3 .github/scripts/update_profile_cache_versions.py
+
+      # 成功したカードとキャッシュ更新済みREADMEをコミットする。
       - name: Commit updated cards
         shell: bash
         run: |
@@ -166,10 +171,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add profile/stats.svg profile/top-langs.svg profile/trophy.svg
+          git add README.md profile/stats.svg profile/top-langs.svg profile/trophy.svg
 
           if git diff --cached --quiet; then
-            echo "Profile cards are already up to date."
+            echo "Profile cards and README image URLs are already up to date."
             exit 0
           fi
 
