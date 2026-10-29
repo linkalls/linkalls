@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="160" viewBox="0 0 320 160" role="img" aria-label="Top Languages: waiting for initial Actions run">
+  <rect x="0.5" y="0.5" width="319" height="159" rx="6" fill="#282c34" stroke="#3b4048"/>
+  <text x="22" y="37" fill="#e4bf7a" font-size="19" font-family="Arial, sans-serif" font-weight="bold">Top Languages</text>
+  <text x="22" y="81" fill="#abb2bf" font-size="15" font-family="Arial, sans-serif">Preparing language statistics...</text>
+  <text x="22" y="111" fill="#89929b" font-size="12" font-family="Arial, sans-serif">Automatic update: daily</text>
+</svg>
