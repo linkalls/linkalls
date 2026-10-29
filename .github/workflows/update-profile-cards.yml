@@ -1,0 +1,119 @@
+# プロフィールREADMEのSVG画像を毎日更新する。
+# 通常の閲覧時は外部画像生成サーバーに依存せず、リポジトリ内のファイルを表示する。
+name: Update GitHub profile cards
+
+on:
+  # UTC 03:17 = 日本時間 12:17。毎日1回自動更新する。
+  schedule:
+    - cron: "17 3 * * *"
+
+  # Actionsタブから手動でも再生成できる。
+  workflow_dispatch:
+
+  # READMEを切り替えた直後に初回生成する。
+  # SVGだけの更新では再実行しないため、無限ループにならない。
+  push:
+    branches:
+      - main
+    paths:
+      - README.md
+
+# SVGをリポジトリへ保存するために必要な最小権限。
+permissions:
+  contents: write
+
+# 同時に実行されてもpushの競合を避ける。
+concurrency:
+  group: github-profile-cards
+  cancel-in-progress: false
+
+jobs:
+  update-cards:
+    name: Generate and commit profile SVG cards
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out profile repository
+        uses: actions/checkout@v4
+
+      # Stats: API取得に失敗した場合はエラー画像を保存しない。
+      - name: Generate GitHub stats
+        id: stats
+        continue-on-error: true
+        uses: stats-organization/github-readme-stats-action@v2
+        with:
+          card: stats
+          options: "username=linkalls&theme=onedark&show_icons=true"
+          path: profile/stats.svg
+          token: ${{ github.token }}
+          fail_on_error: "true"
+
+      # Top Languagesも独立に生成する。
+      - name: Generate top languages
+        id: languages
+        continue-on-error: true
+        uses: stats-organization/github-readme-stats-action@v2
+        with:
+          card: top-langs
+          options: "username=linkalls&layout=compact&theme=onedark"
+          path: profile/top-langs.svg
+          token: ${{ github.token }}
+          fail_on_error: "true"
+
+      # Trophyは公開プロフィールを横断して集計するため、PATが必要な環境もある。
+      # PROFILE_STATS_TOKENがなければGITHUB_TOKENで試す。
+      # PATが必要ならSettings > Secrets and variables > Actionsに追加する。
+      - name: Generate GitHub trophy
+        id: trophy
+        continue-on-error: true
+        uses: soulteary/github-profile-trophy-action@v1
+        with:
+          options: "username=linkalls&theme=radical"
+          path: profile/trophy.svg
+          token: ${{ secrets.PROFILE_STATS_TOKEN || github.token }}
+
+      # どれかの生成に失敗したら、そのカードだけ前回の正常なSVGを残す。
+      # 初回はリポジトリ内に表示可能なプレースホルダーがある。
+      - name: Preserve previously generated cards on failure
+        shell: bash
+        env:
+          STATS_OUTCOME: ${{ steps.stats.outcome }}
+          LANGUAGES_OUTCOME: ${{ steps.languages.outcome }}
+          TROPHY_OUTCOME: ${{ steps.trophy.outcome }}
+        run: |
+          set -euo pipefail
+
+          check_card() {
+            local file="$1"
+            local outcome="$2"
+
+            if [[ "$outcome" != "success" ]] ||
+               ! grep -q '<svg' "$file" ||
+               ! grep -q '</svg>' "$file"; then
+              echo "::warning title=Profile card unchanged::Generation failed or returned invalid SVG: $file"
+              git restore -- "$file"
+            fi
+          }
+
+          check_card "profile/stats.svg" "$STATS_OUTCOME"
+          check_card "profile/top-langs.svg" "$LANGUAGES_OUTCOME"
+          check_card "profile/trophy.svg" "$TROPHY_OUTCOME"
+
+      # 成功したカードだけをコミット。変更がなければ何もしない。
+      - name: Commit updated cards
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add profile/stats.svg profile/top-langs.svg profile/trophy.svg
+
+          if git diff --cached --quiet; then
+            echo "Profile cards are already up to date."
+            exit 0
+          fi
+
+          git commit -m "chore: refresh GitHub profile cards [skip ci]"
+          git push
