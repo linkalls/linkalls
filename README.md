@@ -1,9 +1,9 @@
 <p align="left">
   <img alt="Top Languages" height="150px" src="./profile/top-langs.svg?v=2de03e650fca" />
-  <img alt="GitHub Stats" height="150px" src="./profile/stats.svg?v=5ef46dc6a6b3" />
+  <img alt="GitHub Stats" height="150px" src="./profile/stats.svg?v=d89a17dc4c42" />
 </p>
 
-[![GitHub Trophy](./profile/trophy.svg?v=d0f7256daf78)](https://github.com/soulteary/github-profile-trophy)
+[![GitHub Trophy](./profile/trophy.svg?v=9f6f63b4168d)](https://github.com/soulteary/github-profile-trophy)
 
 <!-- Profile SVG cards are updated daily; image URLs are versioned automatically to avoid stale GitHub caches. -->
 
