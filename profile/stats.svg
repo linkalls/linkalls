@@ -9,7 +9,7 @@
         aria-labelledby="descId"
       >
         <title id="titleId">linkalls&#39; GitHub Stats, Rank: A-</title>
-        <desc id="descId">Total Stars Earned: 47, Total Commits  (last year) : 1473, Total PRs: 229, Total Issues: 6, Contributed to (last year): 1</desc>
+        <desc id="descId">Total Stars Earned: 47, Total Commits  (last year) : 1490, Total PRs: 229, Total Issues: 6, Contributed to (last year): 1</desc>
         <style>
           .header {
             font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif;
@@ -73,7 +73,7 @@
         stroke-dashoffset: 251.32741228718345;
       }
       to {
-        stroke-dashoffset: 76.3483144822852;
+        stroke-dashoffset: 76.31583871434296;
       }
     }
   
