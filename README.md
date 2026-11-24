@@ -3,7 +3,7 @@
   <img alt="GitHub Stats" height="150px" src="./profile/stats.svg?v=6f0e069ee86d" />
 </p>
 
-[![GitHub Trophy](./profile/trophy.svg?v=941276e6efea)](https://github.com/soulteary/github-profile-trophy)
+[![GitHub Trophy](./profile/trophy.svg?v=88efca5d3bfb)](https://github.com/soulteary/github-profile-trophy)
 
 <!-- Profile SVG cards are updated daily; image URLs are versioned automatically to avoid stale GitHub caches. -->
 
